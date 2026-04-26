@@ -73,7 +73,7 @@ a {
 .hero-copy {
   position: relative;
   z-index: 2;
-  width: min(940px, calc(100% - 32px));
+  width: min(1080px, calc(100% - 32px));
   margin: 32px auto 0;
   text-align: center;
 }
@@ -98,16 +98,22 @@ h1 {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 0.04em;
+  column-gap: 0.24em;
+  row-gap: 0.08em;
   margin: 0;
   line-height: 0.92;
-  font-size: clamp(3.5rem, 11vw, 8.8rem);
+  font-size: clamp(3rem, 8vw, 6.4rem);
   font-weight: 900;
   letter-spacing: 0;
   text-transform: uppercase;
 }
 
-h1 span:not(.gap) {
+.title-word {
+  display: inline-flex;
+  white-space: nowrap;
+}
+
+.title-word span {
   display: inline-block;
   color: hsl(calc(var(--letter) * 24 + 330), 92%, 55%);
   text-shadow:
@@ -115,10 +121,6 @@ h1 span:not(.gap) {
     0 9px 0 rgba(36, 33, 59, 0.09);
   animation: rainbow-pop 1.8s ease-in-out infinite;
   animation-delay: calc(var(--letter) * 55ms);
-}
-
-.gap {
-  width: 0.32em;
 }
 
 .intro {
@@ -130,7 +132,16 @@ h1 span:not(.gap) {
   text-shadow: 0 2px 0 rgba(255, 255, 255, 0.65);
 }
 
-.sparkle-button {
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.sparkle-button,
+.music-button {
   border: 0;
   border-radius: 8px;
   padding: 14px 22px;
@@ -145,10 +156,51 @@ h1 span:not(.gap) {
 }
 
 .sparkle-button:hover,
-.sparkle-button:focus-visible {
+.sparkle-button:focus-visible,
+.music-button:hover,
+.music-button:focus-visible {
   transform: translateY(-3px) rotate(-1deg);
   box-shadow: 0 12px 0 rgba(91, 52, 114, 0.16);
   outline: 3px solid #ffffff;
+  outline-offset: 4px;
+}
+
+.music-player {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-width: 100%;
+  padding: 10px;
+  border: 4px solid #ffffff;
+  border-radius: 8px;
+  background: rgba(255, 250, 244, 0.82);
+  box-shadow: 0 9px 0 rgba(91, 52, 114, 0.12);
+}
+
+.music-button {
+  padding: 10px 14px;
+  background: #ffffff;
+  box-shadow: none;
+}
+
+.volume-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 210px;
+  color: var(--plum);
+  font-weight: 900;
+}
+
+.volume-slider {
+  width: 128px;
+  accent-color: var(--rose);
+  cursor: pointer;
+}
+
+.volume-slider:focus-visible {
+  outline: 3px solid var(--sun);
   outline-offset: 4px;
 }
 
@@ -554,16 +606,26 @@ h1 span:not(.gap) {
   }
 
   .hero-copy {
-    width: min(100% - 20px, 940px);
+    width: min(100% - 20px, 1080px);
     margin-top: 20px;
   }
 
   h1 {
-    font-size: clamp(3rem, 17vw, 5.4rem);
+    font-size: clamp(2.55rem, 14vw, 4.45rem);
   }
 
   .intro {
     margin-top: 14px;
+  }
+
+  .music-player {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .volume-control {
+    justify-content: center;
+    min-width: 100%;
   }
 
   .rainbow-ribbons {

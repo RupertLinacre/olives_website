@@ -1,4 +1,6 @@
+import confetti from 'canvas-confetti'
 import './style.css'
+import bunnySong from '../bunny_song.m4a'
 import survivalPoster from '../how_bunnies_survive.png'
 import bunnyMeadow from './assets/bunny-meadow.png'
 
@@ -43,33 +45,49 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         <p class="kicker">Made especially for Olive</p>
         <h1 id="site-title" aria-label="Olive's Best Website">
           ${"olive's best website"
-            .split('')
-            .map((letter, index) =>
-              letter === ' '
-                ? '<span class="gap" aria-hidden="true"></span>'
-                : `<span style="--letter:${index}">${letter}</span>`,
+            .split(' ')
+            .map(
+              (word, wordIndex) =>
+                `<span class="title-word">${word
+                  .split('')
+                  .map((letter, letterIndex) => {
+                    const index = wordIndex * 8 + letterIndex
+                    return `<span style="--letter:${index}">${letter}</span>`
+                  })
+                  .join('')}</span>`,
             )
             .join('')}
         </h1>
         <p class="intro">
           A rainbow-sparkle adventure about how bunnies listen, hide, hop, and nibble their way through the world.
         </p>
-        <button class="sparkle-button" type="button">More sparkles!</button>
+        <div class="hero-actions">
+          <button class="sparkle-button" type="button">More sparkles!</button>
+          <div class="music-player" aria-label="Bunny song controls">
+            <audio class="bunny-audio" src="${bunnySong}" preload="metadata" loop></audio>
+            <button class="music-button play-button" type="button" aria-label="Play bunny song">Play song</button>
+            <button class="music-button mute-button" type="button" aria-label="Mute bunny song">Mute</button>
+            <label class="volume-control">
+              <span>Volume</span>
+              <input class="volume-slider" type="range" min="0" max="1" step="0.01" value="0.65" aria-label="Bunny song volume" />
+            </label>
+          </div>
+        </div>
       </div>
     </section>
 
     <section class="fact-strip" aria-label="Bunny survival facts">
       ${survivalFacts
-        .map(
-          (fact) => `
+    .map(
+      (fact) => `
           <article class="fact-card">
             <div class="fact-icon" aria-hidden="true">${fact.icon}</div>
             <h2>${fact.title}</h2>
             <p>${fact.copy}</p>
           </article>
         `,
-        )
-        .join('')}
+    )
+    .join('')}
     </section>
 
     <section class="survival-poster" aria-labelledby="poster-title">
@@ -115,10 +133,102 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 
 const sparkleButton = document.querySelector<HTMLButtonElement>('.sparkle-button')
 const sparkleField = document.querySelector<HTMLDivElement>('.sparkle-field')
+const bunnyAudio = document.querySelector<HTMLAudioElement>('.bunny-audio')
+const playButton = document.querySelector<HTMLButtonElement>('.play-button')
+const muteButton = document.querySelector<HTMLButtonElement>('.mute-button')
+const volumeSlider = document.querySelector<HTMLInputElement>('.volume-slider')
+
+const launchSparkles = () => {
+  const sparkleColors = ['#ff5e9c', '#ffd166', '#57d5c8', '#7a77ff', '#ffffff']
+  const sparkleShapes = ['star', 'circle'] as confetti.Shape[]
+
+  confetti({
+    particleCount: 180,
+    spread: 115,
+    startVelocity: 48,
+    scalar: 1.1,
+    ticks: 240,
+    shapes: sparkleShapes,
+    colors: sparkleColors,
+    origin: { x: 0.5, y: 0.38 },
+  })
+
+  confetti({
+    particleCount: 110,
+    angle: 55,
+    spread: 75,
+    startVelocity: 62,
+    scalar: 0.95,
+    shapes: sparkleShapes,
+    colors: sparkleColors,
+    origin: { x: 0.05, y: 0.72 },
+  })
+
+  confetti({
+    particleCount: 110,
+    angle: 125,
+    spread: 75,
+    startVelocity: 62,
+    scalar: 0.95,
+    shapes: sparkleShapes,
+    colors: sparkleColors,
+    origin: { x: 0.95, y: 0.72 },
+  })
+
+  window.setTimeout(() => {
+    confetti({
+      particleCount: 160,
+      spread: 160,
+      startVelocity: 34,
+      gravity: 0.7,
+      scalar: 0.8,
+      ticks: 260,
+      shapes: sparkleShapes,
+      colors: sparkleColors,
+      origin: { x: Math.random() * 0.5 + 0.25, y: 0.18 },
+    })
+  }, 180)
+}
 
 sparkleButton?.addEventListener('click', () => {
   sparkleField?.classList.remove('burst')
   window.requestAnimationFrame(() => {
     sparkleField?.classList.add('burst')
   })
+  launchSparkles()
 })
+
+if (bunnyAudio && playButton && muteButton && volumeSlider) {
+  bunnyAudio.volume = Number(volumeSlider.value)
+
+  const updateMusicButtons = () => {
+    playButton.textContent = bunnyAudio.paused ? 'Play song' : 'Pause song'
+    playButton.setAttribute('aria-label', bunnyAudio.paused ? 'Play bunny song' : 'Pause bunny song')
+    muteButton.textContent = bunnyAudio.muted || bunnyAudio.volume === 0 ? 'Unmute' : 'Mute'
+    muteButton.setAttribute('aria-label', bunnyAudio.muted ? 'Unmute bunny song' : 'Mute bunny song')
+  }
+
+  playButton.addEventListener('click', async () => {
+    if (bunnyAudio.paused) {
+      await bunnyAudio.play()
+    } else {
+      bunnyAudio.pause()
+    }
+    updateMusicButtons()
+  })
+
+  muteButton.addEventListener('click', () => {
+    bunnyAudio.muted = !bunnyAudio.muted
+    updateMusicButtons()
+  })
+
+  volumeSlider.addEventListener('input', () => {
+    bunnyAudio.volume = Number(volumeSlider.value)
+    bunnyAudio.muted = bunnyAudio.volume === 0
+    updateMusicButtons()
+  })
+
+  bunnyAudio.addEventListener('play', updateMusicButtons)
+  bunnyAudio.addEventListener('pause', updateMusicButtons)
+  updateMusicButtons()
+}
